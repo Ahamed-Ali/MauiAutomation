@@ -66,7 +66,12 @@ steps:
       echo "##[group]Launch App"
       $ANDROID_HOME/platform-tools/adb shell monkey -p com.companyname.samplemauiapp -c android.intent.category.LAUNCHER 1
       echo "##[endgroup]"
-
+- task: Bash@3
+  displayName: 'Wait for the app launch'
+  inputs:
+    targetType: 'inline'
+    script: |
+      sleep 30 # Adjust as necessary to ensure the app is fully launched
 - task: Bash@3
   displayName: 'Capture Screenshot'
   inputs:
