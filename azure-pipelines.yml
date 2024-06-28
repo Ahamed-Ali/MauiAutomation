@@ -1,3 +1,4 @@
+
 trigger:
 - main
 pool:
@@ -6,6 +7,7 @@ variables:
   ANDROID_HOME: /Users/runner/Library/Android/sdk
   EMULATOR_NAME: xamarin_android_emulator
 steps:
+- checkout: self
 - script: |
     echo "##[group]Install Android Command Line Tools"
     mkdir -p $ANDROID_HOME/cmdline-tools
@@ -44,6 +46,22 @@ steps:
     targetType: 'inline'
     script: |
       sleep 30 # Adjust as necessary to ensure the emulator is fully started
+
+- task: CmdLine@2
+  displayName: 'Install Latest .NET MAUI Workload'
+  inputs:
+    script: 'dotnet workload install maui'
+- script: |
+    dotnet build SampleMauiApp/SampleMauiApp.csproj -c Release -o $(Build.ArtifactStagingDirectory)
+  displayName: 'Build Maui project'
+
+- task: Bash@3
+  displayName: 'Install APK on Emulator'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ANDROID_HOME/platform-tools/adb install -r $(Build.ArtifactStagingDirectory)/com.companyname.samplemauiapp-Signed.apk
+
 - task: Bash@3
   displayName: 'Capture Screenshot'
   inputs:
