@@ -56,11 +56,16 @@ steps:
   displayName: 'Build Maui project'
 
 - task: Bash@3
-  displayName: 'Install APK on Emulator'
+  displayName: 'Install and Launch APK on Emulator'
   inputs:
     targetType: 'inline'
     script: |
+      echo "##[group]Install APK on Emulator"
       $ANDROID_HOME/platform-tools/adb install -r $(Build.ArtifactStagingDirectory)/com.companyname.samplemauiapp-Signed.apk
+      echo "##[endgroup]"
+      echo "##[group]Launch App"
+      $ANDROID_HOME/platform-tools/adb shell monkey -p com.companyname.samplemauiapp -c android.intent.category.LAUNCHER 1
+      echo "##[endgroup]"
 
 - task: Bash@3
   displayName: 'Capture Screenshot'
